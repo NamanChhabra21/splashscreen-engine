@@ -3,7 +3,8 @@ import threading
 import time
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-os.environ['SDL_VIDEO_CENTERED'] = '1'
+s = '1'
+os.environ['SDL_VIDEO_CENTERED'] = s
 
 # Modules
 import pygame
@@ -77,6 +78,8 @@ def draw_text(screen, texts):
             )
 
 
+one_time_warning = True # A variable used for printing warning inside the size() function | Ensuring doesn't repeat printing the same
+
 class Screen:
 
     def __init__(self):
@@ -148,75 +151,76 @@ class Screen:
 
         pygame.display.update()
 
-    def mainloop(self):
+        def mainloop():
 
 
-        if not self.screen:
+            if not self.screen:
 
-            self.start()
+                self.start()
 
-        self.running = True
+            self.running = True
 
-        while self.running and not self.stopped:
-            avoid_lag()
+            while self.running and not self.stopped:
+                avoid_lag()
 
-            # CLEAR SCREEN
-            self.screen.fill(self.bgColor)
+                # CLEAR SCREEN
+                self.screen.fill(self.bgColor)
 
-            # DRAW BACKGROUND IMAGE
-            if self.current_background:
-
-                self.screen.blit(
-                    self.current_background.image,
-                    (0, 0)
-                )
-
-                draw_loading_bar(
-                    self.screen,
-                    self.current_background.ui_elements
-                )
-
-                draw_text(
-                    self.screen,
-                    self.current_background.ui_elements
-                )
-
-            # DRAW FOREGROUND VIDEO
-            if self.foreground_video:
-
-                # DRAW VIDEO FRAME
-                if self.foreground_video.frame:
+                # DRAW BACKGROUND IMAGE
+                if self.current_background:
 
                     self.screen.blit(
-                        self.foreground_video.frame,
+                        self.current_background.image,
                         (0, 0)
                     )
 
-                # DRAW VIDEO UI
+                    draw_loading_bar(
+                        self.screen,
+                        self.current_background.ui_elements
+                    )
+
+                    draw_text(
+                        self.screen,
+                        self.current_background.ui_elements
+                    )
+
+                # DRAW FOREGROUND VIDEO
+                if self.foreground_video:
+
+                    # DRAW VIDEO FRAME
+                    if self.foreground_video.frame:
+
+                        self.screen.blit(
+                            self.foreground_video.frame,
+                            (0, 0)
+                        )
+
+                    # DRAW VIDEO UI
+                    draw_loading_bar(
+                        self.screen,
+                        self.foreground_video.ui_elements
+                    )
+
+                    draw_text(
+                        self.screen,
+                        self.foreground_video.ui_elements
+                    )
+
+                # DRAW GLOBAL UI
                 draw_loading_bar(
                     self.screen,
-                    self.foreground_video.ui_elements
+                    self.ui_elements
                 )
 
                 draw_text(
                     self.screen,
-                    self.foreground_video.ui_elements
+                    self.ui_elements
                 )
 
-            # DRAW GLOBAL UI
-            draw_loading_bar(
-                self.screen,
-                self.ui_elements
-            )
+                pygame.display.update()
 
-            draw_text(
-                self.screen,
-                self.ui_elements
-            )
-
-            pygame.display.update()
-
-            self.clock.tick(60)
+                self.clock.tick(60)
+        threading.Thread(target=mainloop).start() # Starts Mainloop as background process
 
     def stop(self,quit_pygame = True):
 
@@ -235,11 +239,34 @@ class Screen:
 
     def size(self, width=750, height=500, fullscreen=False):
 
-        if self.running:
-
-            raise RuntimeError(
-                "size() should be before mainloop() / start()"
+        # Check if width and height is integer and more than 0
+        if (
+                not isinstance(width, int)
+                or
+                not isinstance(height, int)
+                or
+                height < 1
+                or
+                width < 1
+        ):
+            raise TypeError(
+                "Width and Height must be positive integers."
             )
+
+        global one_time_warning
+        if self.running and one_time_warning:
+            print(
+                "\033[93m"
+                "[WARNING]\n"
+                "size() was called after start().\n\n"
+                "This may cause screen flickering because\n"
+                "the window needs to be recreated.\n\n"
+                "For best results, call size() before start().\n\n"
+                "This warning can be ignored if dynamic\n"
+                "window resizing is intended."
+                "\033[0m"
+            )
+            one_time_warning = False
 
         self.fullscreen = fullscreen
 
@@ -247,6 +274,7 @@ class Screen:
 
             self.height = height
             self.width = width
+        self.screen = pygame.display.set_mode((width,height),pygame.NOFRAME)
 
     def title(self, text="Splash Screen"):
 
@@ -297,7 +325,7 @@ class BackgroundVideo:
 
         self.stop = False
 
-        self.playing = False
+        self.is_playing = False
 
         self.loop_thread_video = None
 
@@ -319,7 +347,7 @@ class BackgroundVideo:
 
         self.stop = False
 
-        self.playing = True
+        self.is_playing = True
 
         # SET FOREGROUND VIDEO
         self.parent.foreground_video = self
@@ -352,7 +380,7 @@ class BackgroundVideo:
                     # NORMAL VIDEO END
                     else:
 
-                        self.playing = False
+                        self.is_playing = False
 
                         # REMOVE FRAME ONLY
                         self.frame = None
@@ -414,7 +442,7 @@ class BackgroundVideo:
 
         self.stop = True
 
-        self.playing = False
+        self.is_playing = False
 
     def resume(self):
 
@@ -614,12 +642,7 @@ class Text:
 
         self.parent = parent
 
-        # AUTO REGISTER
-        if hasattr(self.parent, "ui_elements"):
 
-            self.parent.ui_elements.append(
-                self
-            )
 
         self.text = text
 
@@ -638,6 +661,14 @@ class Text:
         )
 
         self.visible = True
+
+        # REGISTER
+        if hasattr(self.parent, "ui_elements"):
+            self.parent.ui_elements.append(
+                self
+            )
+
+
 
     def edit(
             self,
