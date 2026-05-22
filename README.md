@@ -345,6 +345,21 @@ text.show()
 text.hide()
 ```
 ---
+
+#### Edit The Text | Supports Dynamic Editing
+This allows you to edit the text.
+Example : Changing the value of text `f"Loading {i}%"` using loops. Where `i` is any number.
+```python
+text.edit(
+    text = "New Loading Text Added", # Edits the text
+    font = "IMPACT", # Edits the Font
+    new_size = 20, # Changes the Size
+    position = (50,50), # Changes the position
+    colour = (0,255,0) # Green Color
+    
+)
+```
+---
 ## Contributing & Feedback
 
 Discuss approaches, Suggest new features,
