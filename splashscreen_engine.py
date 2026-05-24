@@ -10,7 +10,7 @@ os.environ['SDL_VIDEO_CENTERED'] = s
 # Modules
 import pygame
 import cv2
-pygame.init()
+
 
 deleted_by_user = False
 program_stopped = False
@@ -112,6 +112,15 @@ one_time_warning = True # A variable used for printing warning inside the size()
 class Screen:
 
     def __init__(self,title_bar=False):
+
+        if not pygame.get_init():
+            pygame.init()
+
+        # Reset Quitting values
+        global deleted_by_user,program_stopped
+        deleted_by_user = False
+        program_stopped = False
+
         # Default Height and Width
         self.height = 500
         self.width = 750
@@ -158,6 +167,7 @@ class Screen:
         return self.width,self.height
 
     def start(self):
+
 
         self.running = True
 
