@@ -25,7 +25,7 @@ pip install splashscreen-engine
 ```
 OR
 ```bash
-pip install splashscreen-engine==2.0.0
+pip install splashscreen-engine==2.0.1
 ```
 
 ## Example
