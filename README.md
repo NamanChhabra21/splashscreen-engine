@@ -6,6 +6,9 @@ A module for making Splash Screens with videos, images, loading bars, text rende
 
 ## Features
 
+- Optional Title Bar
+- Dynamic Window Resizing
+- Fullscreen Support
 - Background videos
 - Background images
 - Loading bars
@@ -19,6 +22,10 @@ A module for making Splash Screens with videos, images, loading bars, text rende
 
 ```bash
 pip install splashscreen-engine
+```
+OR
+```bash
+pip install splashscreen-engine==2.0.0
 ```
 
 ## Example
@@ -43,7 +50,7 @@ video = splash.BackgroundVideo(
 video.play()
 
 # Loading Bar
-bar = splash.LoadingBar(screen)
+bar = splash.LoadingBar(screen,add_xy=(0,100)) # By default, position is `center` and add 100 units to y-axis
 bar.place()
 
 # Text `loading`
@@ -52,7 +59,8 @@ text = splash.Text(
     "Loading...",
     "impact",
     20,
-    (325,400)
+    "down",
+    add_xy=(0,-80) # Place the text downward and subtract 80 units from y-axis
 )
 
 text.show()
@@ -110,7 +118,7 @@ main_screen.mainloop()
 ---
 
 ## Requirements
-
+These Modules are automatically installed with : `pip install splashscreen-engine`
 - pygame
 - opencv-python
 - numpy
@@ -167,8 +175,42 @@ screen.title("Your Title")
 screen.set_bg_color((255,0,0)) # Red
 ```
 
----
+#### Get Window Size
 
+```python
+width,height = screen.get_size()
+```
+
+---
+### Window with Title bar (optional)
+A title bar is the top bar of a window.
+It usually contains:
+
+- window title
+- window icon # Coming Soon
+- close button
+- minimize button
+- maximize button
+- Note : Clicking on Maximize / Minimize button automatically resizes the screen
+
+---
+![Preview](screenshot2.png)
+---
+#### To create a Title Bar
+```python
+screen = splash.Screen(title_bar=True)
+```
+#### Functions for Title Bar
+##### To Check if the user clicked on `X` button
+```python
+screen.is_quit()
+```
+##### To check if the user pressed `Esc` Key during fullscreen
+```python
+screen.is_escaped()
+```
+##### Note : These functions are only applicable when `title_bar = True` else it will raise an error.
+---
 ### Wait Function
 
 Instead of using `time.sleep()`,
@@ -289,17 +331,32 @@ This function adds a progress bar.
 
 ```python
 bar = splash.LoadingBar(
-    screen
+    screen,
+    position="down",
+    add_xy=(0,-50)
 )
 
 # Arguments:
-# parent, width, height
+# parent, width, height,
+# position, add_xy
 
 bar.place()
 
 # Arguments:
-# x, y, colour, loading_colour
+# colour, loading_colour
 ```
+
+#### Available Positions
+
+```python
+"center"
+"right"
+"left"
+"up"
+"down"
+```
+
+
 
 #### Hiding the Progress Bar
 
@@ -325,14 +382,26 @@ text = splash.Text(
     "Loading...",
     "impact",
     20,
-    (325,400)
+    position="center",
+    add_xy=(0,0)
 )
 
 # Arguments:
 # parent, text, font,
-# size, position, colour
+# size, position,
+# add_xy, colour
 
 text.show()
+```
+
+#### Available Positions
+
+```python
+"center"
+"right"
+"left"
+"up"
+"down"
 ```
 
 #### Show and Hide text
@@ -344,26 +413,70 @@ text.show()
 # Hide text
 text.hide()
 ```
+
 ---
 
 #### Edit The Text | Supports Dynamic Editing
-This allows you to edit the text.
-Example : Changing the value of text `f"Loading {i}%"` using loops. Where `i` is any number.
+
+This allows you to edit the text dynamically.
+
+Example:
+Changing:
+`f"Loading {i}%"`
+inside loops.
+
 ```python
 text.edit(
-    text = "New Loading Text Added", # Edits the text
-    font = "IMPACT", # Edits the Font
-    new_size = 20, # Changes the Size
-    position = (50,50), # Changes the position
-    colour = (0,255,0) # Green Color
-    
+    text = "New Loading Text Added",
+    font = "IMPACT",
+    new_size = 20,
+    position = "center",
+    add_xy = (0,0),
+    colour = (0,255,0)
 )
 ```
 ---
+### `add_xy` Argument
+
+`add_xy` allows you to move objects relative to their selected position.
+
+Structure:
+
+```python
+add_xy = (x,y)
+```
+
+| Value | Meaning |
+|---|---|
+| Positive `x` | Move Right |
+| Negative `x` | Move Left |
+| Positive `y` | Move Down |
+| Negative `y` | Move Up |
+
+Example:
+
+```python
+text = splash.Text(
+    screen,
+    "Loading...",
+    position="center",
+    add_xy=(0,-100)
+)
+```
+
+This places the text:
+- Horizontally centered
+- 100 pixels above the center
+
+---
+
 ## Contributing & Feedback
 
-Discuss approaches, Suggest new features,
-Report bugs, or Share improvements through GitHub
+Discuss approaches, suggest new features,
+report bugs, or share improvements through GitHub
 issues and discussions.
-or mail at : chhabranaman21@gmail.com
+
+Mail:
+chhabranaman21@gmail.com
+
 ---
