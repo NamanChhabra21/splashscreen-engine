@@ -25,7 +25,7 @@ pip install splashscreen-engine
 ```
 OR
 ```bash
-pip install splashscreen-engine==2.0.1
+pip install splashscreen-engine==2.0.2
 ```
 
 ## Example
@@ -187,7 +187,6 @@ A title bar is the top bar of a window.
 It usually contains:
 
 - window title
-- window icon # Coming Soon
 - close button
 - minimize button
 - maximize button
@@ -201,6 +200,10 @@ It usually contains:
 screen = splash.Screen(title_bar=True)
 ```
 #### Functions for Title Bar
+##### Adding an Icon
+```python
+screen.set_icon("YourIcon.png")
+```
 ##### To Check if the user clicked on `X` button
 ```python
 screen.is_quit()
@@ -469,14 +472,30 @@ This places the text:
 - 100 pixels above the center
 
 ---
-
+### Getting Documentation
+```python
+documentation = splash.Documentation()
+```
+#### Opening Documentation
+This opens `README.md` file on Github
+```python
+documentation.open()
+```
+#### Contact Details
+This prints all the contact details
+```python
+documentation.contact()
+```
+---
 ## Contributing & Feedback
 
 Discuss approaches, suggest new features,
 report bugs, or share improvements through GitHub
 issues and discussions.
 
-Mail:
+##### Mail:
 chhabranaman21@gmail.com
+##### PyPI:
+https://pypi.org/project/splashscreen-engine
 
 ---
