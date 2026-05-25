@@ -25,7 +25,7 @@ pip install splashscreen-engine
 ```
 OR
 ```bash
-pip install splashscreen-engine==2.0.2
+pip install splashscreen-engine==2.0.3
 ```
 
 ## Example
@@ -99,7 +99,7 @@ instead of `screen.stop()`
 
 # Main Screen Example
 
-import tkinter # pip install tkinter -- used as main screen for example.
+import tkinter # Used as main screen for example.
 main_screen = tkinter.Tk()
 
 main_screen.geometry("750x500")
