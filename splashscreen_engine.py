@@ -156,7 +156,7 @@ class Screen:
         self.foreground_video = None
 
         # Icon
-        self.icon = pygame.image.load("SplashLogo.png")
+        self.icon = None
 
 
         # GLOBAL UI
@@ -195,7 +195,7 @@ class Screen:
             # Creates window with title Bar
             self.screen = pygame.display.set_mode((w, h),pygame.RESIZABLE)
 
-        pygame.display.set_icon(self.icon.convert_alpha())
+
         self.screen.fill(self.bgColor)
 
         pygame.display.update()
