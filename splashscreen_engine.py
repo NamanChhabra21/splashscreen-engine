@@ -155,11 +155,19 @@ class Screen:
         # FOREGROUND VIDEO
         self.foreground_video = None
 
+        # Icon
+        self.icon = pygame.image.load("SplashLogo.png")
+
+
         # GLOBAL UI
         self.ui_elements = []
 
         self.title_bar = title_bar
         self.is_escape = False
+
+
+
+
 
 
 
@@ -187,10 +195,11 @@ class Screen:
             # Creates window with title Bar
             self.screen = pygame.display.set_mode((w, h),pygame.RESIZABLE)
 
-
+        pygame.display.set_icon(self.icon.convert_alpha())
         self.screen.fill(self.bgColor)
 
         pygame.display.update()
+
 
         # BACKGROUND MAINLOOP
         def mainloop():
@@ -200,6 +209,8 @@ class Screen:
                 self.start()
 
             self.running = True
+
+
 
             while self.running and not self.stopped:
 
@@ -349,6 +360,14 @@ class Screen:
     def set_bg_color(self, color=(0, 0, 0)):
 
         self.bgColor = color
+
+    def set_icon(self,path):
+        if not self.title_bar:
+            raise RuntimeError("Unable to set Icon, Title Bar is disabled.")
+        self.icon = path
+        icon_image = pygame.image.load(path).convert_alpha()
+        pygame.display.set_icon(icon_image)
+
 
 
     def is_quit(self):
@@ -723,4 +742,25 @@ class Text:
 
     def show(self):
         self.visible = True
+
+class Documentation:
+    def __init__(self):
+        self.GithubReadMeLink = "https://github.com/NamanChhabra21/splashscreen-engine/blob/main/README.md"
+        self.gmail = "chhabranaman21@gmail.com"
+        self.ytChannel = "www.youtube.com/@GenZCoderZShorts"
+        self.GithubLink = "https://github.com/NamanChhabra21"
+        self.pypi = "https://pypi.org/project/splashscreen-engine/"
+        self.issues = "https://github.com//NamanChhabra21//splashscreen-engine//issues"
+        self.discussions = "https://github.com/NamanChhabra21/splashscreen-engine/discussions"
+
+    def open(self):
+        os.startfile(self.GithubReadMeLink)
+    def contact(self):
+        print(f"For Contact & Feedback :\n\
+              Github : {self.GithubLink}\n\
+              PyPI : {self.pypi}\n\
+              YouTube : {self.ytChannel}\n\
+              Issues : {self.issues}\n\
+              Discussions : {self.discussions}\n\
+              Mail : {self.gmail}")
 
