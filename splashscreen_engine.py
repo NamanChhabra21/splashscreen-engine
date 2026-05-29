@@ -3,13 +3,17 @@ import threading
 import time
 
 
+
+# Hide pygame Welcome Message and centralize the screen
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 s = '1'
 os.environ['SDL_VIDEO_CENTERED'] = s
 
 # Modules
 import pygame
-import cv2
+
+# Engine Files
+import video_renderer
 
 
 deleted_by_user = False
@@ -63,19 +67,71 @@ def draw_loading_bar(screen, bars):
             )
 
             # INNER LOADER
-            pygame.draw.rect(
-                screen,
-                bar.loading_colour,
-                (x,y,
-                    int(
-                        bar.width *
-                        (bar.progress / 100)
+            if bar.video is None:  # Fill Color
+
+                pygame.draw.rect(
+                    screen,
+                    bar.loading_colour,
+                    (
+                        x,
+                        y,
+                        int(bar.width * (bar.progress / 100)),
+                        int(bar.height)
                     ),
-                    int(bar.height)
-                ),
-                border_radius=10
+                    border_radius=10
+                )
+                return
+
+            # For Inner Bar Video
+            surface = bar.video.next_frame(
+                int(bar.width),
+                int(bar.height)
             )
 
+            # If video ended
+            if surface is None:
+                bar.video.reset_frames()
+
+                surface = bar.video.next_frame(
+                    int(bar.width),
+                    int(bar.height)
+                )
+
+            progress_width = int(
+                bar.width * (bar.progress / 100)
+            )
+
+            # Ensure width is not 0
+            if progress_width > 0:
+                cropped_surface = surface.subsurface(
+                    (
+                        0,
+                        0,
+                        progress_width,
+                        int(bar.height)
+                    )
+                )
+
+                final_surface = pygame.Surface(
+                    (
+                        progress_width,
+                        int(bar.height)
+                    ),
+                    pygame.SRCALPHA
+                )
+
+                pygame.draw.rect(
+                    final_surface,
+                    (255, 255, 255, 255),
+                    (
+                        0,
+                        0,progress_width,int(bar.height)),border_radius=10)
+                final_surface.blit(
+                    cropped_surface,
+                    (0, 0),
+                    special_flags=pygame.BLEND_RGBA_MIN
+                )
+                screen.blit(final_surface,(x, y))
 
 def draw_text(screen, texts):
     for txt in texts:
@@ -107,7 +163,7 @@ def draw_text(screen, texts):
             screen.blit(surface,text_rect)
 
 
-one_time_warning = True # A variable used for printing warning inside the size() function | Ensuring doesn't repeat printing the same
+
 
 class Screen:
 
@@ -165,7 +221,7 @@ class Screen:
         self.title_bar = title_bar
         self.is_escape = False
 
-
+        self.one_time_warning = True  # A variable used for printing warning inside the size() function | Ensuring doesn't repeat printing the same
 
 
 
@@ -225,6 +281,7 @@ class Screen:
                         if event.type == pygame.QUIT:
 
                             program_stopped = True
+                            self.running = False
                         if event.type == pygame.KEYDOWN:
                             if event.key == pygame.K_ESCAPE:
                                 self.is_escape = True
@@ -234,6 +291,7 @@ class Screen:
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
                             program_stopped = True
+                            self.running = False
 
 
 
@@ -242,7 +300,8 @@ class Screen:
 
                 # DRAW BACKGROUND IMAGE
                 if self.current_background:
-                    self.screen.blit(self.current_background.image,(0, 0))
+                    bg = pygame.transform.scale(self.current_background.original_image,(self.width,self.height))
+                    self.screen.blit(bg,(0, 0))
                     draw_loading_bar(self.screen,self.current_background.ui_elements)
                     draw_text(self.screen,self.current_background.ui_elements)
 
@@ -250,7 +309,7 @@ class Screen:
                 if self.foreground_video:
 
                     # DRAW VIDEO FRAME
-                    if self.foreground_video.frame:
+                    if self.foreground_video.frame is not None:
                         self.screen.blit(self.foreground_video.frame,(0, 0))
 
                     # DRAW VIDEO UI
@@ -300,8 +359,8 @@ class Screen:
                 f"Width and Height must be positive integers. Got width = {width} and height = {height}."
             )
 
-        global one_time_warning
-        if self.running and one_time_warning:
+
+        if self.running and self.one_time_warning:
             print(
                 "\033[93m"
                 "[WARNING]\n"
@@ -313,7 +372,7 @@ class Screen:
                 "window resizing is intended."
                 "\033[0m"
             )
-        one_time_warning = False
+        self.one_time_warning = False
 
         self.fullscreen = fullscreen
 
@@ -349,7 +408,7 @@ class Screen:
 
             return
 
-        while seconds >= 0:
+        while seconds > 0:
 
             avoid_lag()
 
@@ -398,7 +457,7 @@ class BackgroundVideo:
 
         self.path = path
 
-        self.video = cv2.VideoCapture(self.path)
+        self.video = video_renderer.Vid(self.path)
 
         self.stop = False
 
@@ -420,6 +479,8 @@ class BackgroundVideo:
 
         self.loop = loop
 
+        self.clock = pygame.time.Clock()
+
     def play(self):
 
         self.stop = False
@@ -432,26 +493,30 @@ class BackgroundVideo:
         if not self.video:
             return
 
+
         def thread_video():
 
             while self.parent.running and not self.stop:
 
                 avoid_lag()
 
-                # READ FRAME
-                success, frame = self.video.read()
+                # get Video Frame
+
+                # FULLSCREEN
+                if self.parent.fullscreen:
+
+                    surface = self.video.next_frame(self.parent.info.current_w, self.parent.info.current_h)
+
+                # NORMAL WINDOW
+                else:
+                    surface = self.video.next_frame(self.parent.width, self.parent.height)
 
                 # VIDEO FINISHED
-                if not success:
+                if surface is None:
 
                     # LOOP VIDEO
                     if self.loop:
-
-                        self.video.set(
-                            cv2.CAP_PROP_POS_FRAMES,
-                            0
-                        )
-
+                        self.video.reset_frames()
                         continue
 
                     # NORMAL VIDEO END
@@ -461,58 +526,18 @@ class BackgroundVideo:
 
                         # REMOVE FRAME ONLY
                         self.frame = None
-
                         break
 
-                # CONVERT COLORS
-                frame = cv2.cvtColor(
-                    frame,
-                    cv2.COLOR_BGR2RGB
-                )
-
-                # FULLSCREEN
-                if self.parent.fullscreen:
-
-                    frame = cv2.resize(
-                        frame,
-                        (
-                            self.parent.info.current_w,
-                            self.parent.info.current_h
-                        )
-                    )
-
-                # NORMAL WINDOW
-                else:
-
-                    frame = cv2.resize(
-                        frame,
-                        (
-                            self.parent.width,
-                            self.parent.height
-                        )
-                    )
-
-                # CREATE SURFACE
-                surface = pygame.surfarray.make_surface(
-                    frame.swapaxes(0, 1)
-                )
 
                 # TRANSPARENCY
                 if self.transparent:
-
-                    surface.set_alpha(
-                        self.transparent_level
-                    )
+                    surface.set_alpha(self.transparent_level)
 
                 # STORE FRAME
                 self.frame = surface
+                self.clock.tick(self.fps)
 
-                self.parent.clock.tick(self.fps)
-
-        self.loop_thread_video = threading.Thread(
-            target=thread_video
-        )
-
+        self.loop_thread_video = threading.Thread(target=thread_video)
         self.loop_thread_video.start()
 
     def pause(self):
@@ -523,19 +548,17 @@ class BackgroundVideo:
 
     def resume(self):
 
-        self.stop = False
+        if self.stop:
+            self.stop = False
 
-        self.play()
+            self.play()
+
 
     def delete(self):
 
         self.pause()
 
-        self.video.set(
-            cv2.CAP_PROP_POS_FRAMES,
-            0
-        )
-
+        self.video.reset_frames()
         self.frame = None
 
     def transparency(self, level=120):
@@ -558,7 +581,7 @@ class BackgroundVideo:
         self.loop = False
 
     def playing(self):
-        return self.playing
+        return self.is_playing
 
 
 class BackgroundImage:
@@ -578,34 +601,10 @@ class BackgroundImage:
 
         self.ui_elements = []
 
-        image = pygame.image.load(self.path)
-
-        # FULLSCREEN
-        if self.parent.fullscreen:
-
-            image = pygame.transform.scale(
-                image,
-                (
-                    self.parent.info.current_w,
-                    self.parent.info.current_h
-                )
-            )
-
-        # NORMAL WINDOW
-        else:
-
-            image = pygame.transform.scale(
-                image,
-                (
-                    self.parent.width,
-                    self.parent.height
-                )
-            )
-
-        self.image = image
+        self.original_image = pygame.image.load(self.path).convert_alpha()
+        self.image = self.original_image
 
     def set(self):
-
         self.parent.current_background = self
 
 
@@ -657,6 +656,9 @@ class LoadingBar:
 
         self.progress = 0
 
+        self.video = None
+        self.video_frame = None
+
     def place(
             self,
             colour=(255, 255, 255),
@@ -684,6 +686,10 @@ class LoadingBar:
 
         self.progress = value
 
+    def set_video(self,path):
+        self.video = video_renderer.Vid(path)
+
+
 def check_valid_pos(string,object_type):
     available_position = ["right", "left", "down", "up", "center",None]
     if string not in available_position:
@@ -703,11 +709,10 @@ class Text:
         self.text = text
         self.font = font
         self.size = size
-        self.position = position
         self.colour = colour
         # DEFAULT FONT
         self.pg_font = pygame.font.SysFont(self.font,self.size)
-        self.visible = True
+        self.visible = False
 
 
 
@@ -727,9 +732,10 @@ class Text:
 
         if new_size is not None:
             self.size = new_size
+            self.pg_font = pygame.font.SysFont(self.font, self.size)
 
         if position is not None:
-            self.position = position
+            self.position = position.lower()
 
         if add_xy is not None:
             self.add_xy = add_xy
