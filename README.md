@@ -1,8 +1,14 @@
+![PyPI version](https://img.shields.io/pypi/v/splashscreen-engine)
+![Python](https://img.shields.io/pypi/pyversions/splashscreen-engine)
+![License](https://img.shields.io/github/license/NamanChhabra21/splashscreen-engine)
 # splashscreen-engine
 A module for making Splash Screens with videos, images, loading bars, text rendering, and threaded rendering support for your Applications.
 
 ## Sample Preview
-![Preview](screenshot.png)
+#### Template 1
+![Preview](Screenshots/screenshot.png)
+#### Template 2
+![Preview](Screenshots/screenshot3.png)
 
 ## Features
 
@@ -11,7 +17,7 @@ A module for making Splash Screens with videos, images, loading bars, text rende
 - Fullscreen Support
 - Background videos
 - Background images
-- Loading bars
+- Video-powered loading bars
 - Text rendering
 - Transparency support
 - Threaded rendering
@@ -23,96 +29,29 @@ A module for making Splash Screens with videos, images, loading bars, text rende
 ```bash
 pip install splashscreen-engine
 ```
-OR
-```bash
-pip install splashscreen-engine==2.0.4
-```
+> [!NOTE]
+> Windows is currently the primary supported platform.
 
-## Example
+## Quick Start
 
 ```python
 import splashscreen_engine as splash
 
 screen = splash.Screen()
-screen.size(750,500)
 
-# This Starts The Engine
 screen.start()
 
-# Background Video
 video = splash.BackgroundVideo(
     screen,
-    "exampleVid.mp4",
-    fps=30,
-    loop=True
+    "video.mp4"
 )
 
 video.play()
 
-# Loading Bar
-bar = splash.LoadingBar(screen,add_xy=(0,100)) # By default, position is `center` and add 100 units to y-axis
-bar.place()
+screen.wait(5)
 
-# Text `loading`
-text = splash.Text(
-    screen,
-    "Loading...",
-    "impact",
-    20,
-    "down",
-    add_xy=(0,-80) # Place the text downward and subtract 80 units from y-axis
-)
-
-text.show()
-
-# LOADING | you can add your `loading` processes here
-
-a = 0
-
-while not a >= 100:
-
-    a += 0.3
-
-    text.edit(
-        text=f"loading : {round(a,2)}%"
-    )
-
-    bar.set_progress(a)
-
-    screen.wait(0.05)
-
-text.edit(
-    text="loaded : 100%"
-)
-
-screen.wait(3)
-
-# Stop the splash screen after loading
 screen.stop()
 
-
-"""
-if you are using pygame module in your own code,
-use `screen.stop(quit_pygame=False)`
-instead of `screen.stop()`
-"""
-
-# Main Screen Example
-
-import tkinter # Used as main screen for example.
-main_screen = tkinter.Tk()
-
-main_screen.geometry("750x500")
-
-main_text = tkinter.Label(
-    main_screen,
-    text="Your Main Screen",
-    font=("impact",40)
-)
-
-main_text.pack()
-
-main_screen.mainloop()
 ```
 
 ---
@@ -193,7 +132,7 @@ It usually contains:
 - Note : Clicking on Maximize / Minimize button automatically resizes the screen
 
 ---
-![Preview](screenshot2.png)
+![Preview](Screenshots/screenshot2.png)
 ---
 #### To create a Title Bar
 ```python
@@ -348,6 +287,24 @@ bar.place()
 # Arguments:
 # colour, loading_colour
 ```
+#### Video Loading Bar
+
+You can use videos inside the loading area of the progress bar.
+
+```python
+video_bar = splash.LoadingBar(screen,width=500,height=25)
+video_bar.set_video("Examplevideos/BarVid.mp4")
+
+video_bar.place()
+```
+
+The video automatically fills according to:
+
+```python
+video_bar.set_progress(value)
+```
+
+This creates animated loading effects inside the progress bar.
 
 #### Available Positions
 
@@ -498,4 +455,8 @@ chhabranaman21@gmail.com
 ##### PyPI:
 https://pypi.org/project/splashscreen-engine
 
+---
+## Keywords
+
+#### pygame, splash screen, loading screen, opencv, video rendering, python GUI, pygame framework, splashscreen, animated loader, desktop application, threaded rendering
 ---
