@@ -16,11 +16,11 @@ video = splash.BackgroundVideo(
 video.play()
 
 # Loading Bar
-bar = splash.LoadingBar(screen,add_xy=(0,130)) # By default, position is (center) and add 100 units to y-axis
+bar = splash.LoadingBar(screen,add_xy=(0,130)) # By default, position is (center) and add 130 units to y-axis
 bar.place()
 
 # Bar 2
-bar2 = splash.LoadingBar(parent=screen,add_xy=(0,70),height=40) # By default, position is (center) and add 80 units to y-axis
+bar2 = splash.LoadingBar(parent=screen,add_xy=(0,70),height=40) # By default, position is (center) , add 70 units to y-axis and set height to 40
 bar2.set_video("ExampleVideos/SampleBarVid3.mp4")
 bar2.place(colour=(0,0,0))
 
@@ -101,7 +101,7 @@ instead of `screen.stop()`
 
 # Main Screen Example
 
-import tkinter # pip install tkinter -- used as main screen for example.
+import tkinter
 main_screen = tkinter.Tk()
 
 main_screen.geometry("750x500")
