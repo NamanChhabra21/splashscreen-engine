@@ -3,12 +3,44 @@
 ![License](https://img.shields.io/github/license/NamanChhabra21/splashscreen-engine)
 # splashscreen-engine
 A module for making Splash Screens with videos, images, loading bars, text rendering, and threaded rendering support for your Applications.
-
 ## Sample Preview
-#### Template 1
-![Preview](Screenshots/screenshot.png)
-#### Template 2
-![Preview](Screenshots/screenshot3.png)
+
+You can find these template codes here:
+[Templates](https://github.com/NamanChhabra21/splashscreen-engine/tree/main/Templates)
+
+<table>
+<tr>
+<td align="center">
+
+### Template 1
+<img src="https://raw.githubusercontent.com/NamanChhabra21/splashscreen-engine/main/Screenshots/Template0GIF.gif" width="350">
+
+</td>
+
+<td align="center">
+
+### Template 3
+<img src="https://raw.githubusercontent.com/NamanChhabra21/splashscreen-engine/main/Screenshots/Template2GIF.gif" width="350">
+
+</td>
+</tr>
+
+<tr>
+<td align="center">
+
+### Template 2
+<img src="https://raw.githubusercontent.com/NamanChhabra21/splashscreen-engine/main/Screenshots/Template1GIF.gif" width="350">
+
+</td>
+
+<td align="center">
+
+### Template 4
+<img src="https://raw.githubusercontent.com/NamanChhabra21/splashscreen-engine/main/Screenshots/Template3GIF.gif" width="350">
+
+</td>
+</tr>
+</table>
 
 ## Features
 
