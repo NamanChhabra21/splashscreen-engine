@@ -16,7 +16,7 @@ video = splash.BackgroundVideo(
 video.play()
 
 # Loading Bar
-bar = splash.LoadingBar(screen,add_xy=(0,100),height=50) # By default, position is (center) and add 100 units to y-axis
+bar = splash.LoadingBar(screen,add_xy=(0,100),height=50) # By default, position is (center) , add 100 units to y-axis and set height to 100
 bar.set_video("Examplevideos/BarVid.mp4")
 bar.place()
 
@@ -27,7 +27,7 @@ text = splash.Text(
     "impact",
     20,
     # "down",
-    add_xy=(0,100) # Place the bar downward and subtract 80 units from y-axis
+    add_xy=(0,100) # Place the bar downward and add 100 units to y-axis
     ,colour=(0,0,0)
 )
 
