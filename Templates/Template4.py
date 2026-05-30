@@ -17,7 +17,7 @@ video = splash.BackgroundVideo(
 video.play()
 
 # Loading Bar
-bar = splash.LoadingBar(screen,height=50,add_xy=(0,50)) # By default, position is (center) and add 100 units to y-axis
+bar = splash.LoadingBar(screen,height=50,add_xy=(0,50)) # By default, position is (center) , add 50 units to y-axis and set height to 50
 bar.set_video("ExampleVideos/SampleBarVid4.mp4")
 bar.place()
 
@@ -28,7 +28,7 @@ text = splash.Text(
     "forte",
     40,
     "center",
-    add_xy=(0,100), # Place the bar downward and subtract 80 units from y-axis,
+    add_xy=(0,100), # Place the bar `center` and add 100 units to y-axis,
     colour=(255,255,255)
 )
 
@@ -40,7 +40,7 @@ genZtext = splash.Text(
     "forte",
     100,
     "up",
-    add_xy=(0,20), # Place the bar downward and subtract 80 units from y-axis,
+    add_xy=(0,20), # Place the bar `up` and add 20 units to y-axis,
     colour=(255,255,255)
 )
 genZtext.show()
@@ -97,7 +97,7 @@ instead of `screen.stop()`
 
 # Main Screen Example
 
-import tkinter # pip install tkinter -- used as main screen for example.
+import tkinter
 main_screen = tkinter.Tk()
 
 main_screen.geometry("750x500")
