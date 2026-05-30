@@ -80,7 +80,7 @@ def draw_loading_bar(screen, bars):
                     ),
                     border_radius=10
                 )
-                return
+                continue
 
             # For Inner Bar Video
             surface = bar.video.next_frame(
