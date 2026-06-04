@@ -3,19 +3,22 @@ import threading
 import time
 
 
-
 # Hide pygame Welcome Message and centralize the screen
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 s = '1'
 os.environ['SDL_VIDEO_CENTERED'] = s
 
-# Modules
+# Required Modules
 import pygame
 
 # Engine Files
 import video_renderer
+import Analytics
 
+# Setup Analysis
+analyse = Analytics.Analyse()
 
+# Required Variables to check if the program is stopped or not
 deleted_by_user = False
 program_stopped = False
 
@@ -169,6 +172,8 @@ class Screen:
 
     def __init__(self,title_bar=False):
 
+
+
         if not pygame.get_init():
             pygame.init()
 
@@ -228,10 +233,12 @@ class Screen:
 
 
     def get_size(self):
+        analyse.append_function("get_size()")
         return self.width,self.height
 
     def start(self):
 
+        analyse.append_function("start()")
 
         self.running = True
 
@@ -260,6 +267,7 @@ class Screen:
         # BACKGROUND MAINLOOP
         def mainloop():
             global program_stopped
+
 
             if not self.screen:
                 self.start()
@@ -324,9 +332,12 @@ class Screen:
                 self.clock.tick(60)
             global deleted_by_user
             deleted_by_user = True
+
         threading.Thread(target=mainloop).start() # Starts Mainloop as background process
 
     def stop(self,quit_pygame = True):
+
+        analyse.append_function("stop()")
 
         # Stops the Window
         self.running = False
@@ -340,10 +351,13 @@ class Screen:
         if quit_pygame:
             pygame.quit()
 
+        analyse.save() # save Analysis Data in firebase
+
 
 
     def size(self, width=750, height=500, fullscreen=False):
 
+        analyse.append_function("size()")
 
         # Check if width and height is integer and more than 0
         if (
@@ -393,12 +407,15 @@ class Screen:
 
     def title(self, text="Splash Screen"):
 
+        analyse.append_function("title")
+
         self.caption = text.strip()
 
         pygame.display.set_caption(self.caption)
 
     @staticmethod
     def wait(seconds):
+
 
         if seconds <= 1:
 
@@ -418,9 +435,14 @@ class Screen:
 
     def set_bg_color(self, color=(0, 0, 0)):
 
+        analyse.append_function("set_bg_color()")
+
         self.bgColor = color
 
     def set_icon(self,path):
+
+        analyse.append_function("set_icon()")
+
         if not self.title_bar:
             raise RuntimeError("Unable to set Icon, Title Bar is disabled.")
         self.icon = path
@@ -430,11 +452,16 @@ class Screen:
 
 
     def is_quit(self):
+
+        analyse.append_function("is_quit")
+
         if not self.title_bar:
             raise RuntimeError("`is_quit` only works if you enable Title Bar.")
 
+
         return program_stopped # True if quit else False
     def is_escaped(self):
+
         if not self.title_bar:
             raise RuntimeError("`is_escaped` only works if Title Bar is enabled.")
         escape = self.is_escape
@@ -445,6 +472,8 @@ class Screen:
 class BackgroundVideo:
 
     def __init__(self, screen_object, path, fps=30,loop=False):
+
+        analyse.append_function("BackgroundVideo()")
 
         # ONLY SCREEN ALLOWED
         if not isinstance(screen_object, Screen):
@@ -482,6 +511,8 @@ class BackgroundVideo:
         self.clock = pygame.time.Clock()
 
     def play(self):
+
+        analyse.append_function("play()")
 
         self.stop = False
 
@@ -542,11 +573,15 @@ class BackgroundVideo:
 
     def pause(self):
 
+        analyse.append_function("pause()")
+
         self.stop = True
 
         self.is_playing = False
 
     def resume(self):
+
+        analyse.append_function("resume()")
 
         if self.stop:
             self.stop = False
@@ -556,12 +591,16 @@ class BackgroundVideo:
 
     def delete(self):
 
+        analyse.append_function("delete()")
+
         self.pause()
 
         self.video.reset_frames()
         self.frame = None
 
     def transparency(self, level=120):
+
+        analyse.append_function("transparency()")
 
         if level < 0:
             level = 0
@@ -575,18 +614,24 @@ class BackgroundVideo:
 
     def stop_transparency(self):
 
+        analyse.append_function("stop_transparency()")
+
         self.transparent = False
 
     def stop_loop(self):
+        analyse.append_function("stop_loop()")
         self.loop = False
 
     def playing(self):
+        analyse.append_function("playing()")
         return self.is_playing
 
 
 class BackgroundImage:
 
     def __init__(self, parent, path):
+
+        analyse.append_function("BackgroundImage()")
 
         # ONLY SCREEN ALLOWED
         if not isinstance(parent, Screen):
@@ -605,12 +650,16 @@ class BackgroundImage:
         self.image = self.original_image
 
     def set(self):
+        analyse.append_function("set()")
         self.parent.current_background = self
 
 
 class LoadingBar:
 
+
     def __init__(self, parent, width=None, height=None,position="center",add_xy = (0,0)):
+
+        analyse.append_function("LoadingBar()")
 
         check_valid_pos(position,"LoadingBar")
         self.position = position.lower()
@@ -664,6 +713,7 @@ class LoadingBar:
             colour=(255, 255, 255),
             loading_colour=(0, 255, 0)
     ):
+        analyse.append_function("Bar: place()")
 
         self.colour = colour
 
@@ -672,7 +722,7 @@ class LoadingBar:
         self.visible = True
 
     def hide(self):
-
+        analyse.append_function("hide()")
         self.visible = False
 
     def set_progress(self, value):
@@ -687,6 +737,7 @@ class LoadingBar:
         self.progress = value
 
     def set_video(self,path):
+        analyse.append_function("set_video")
         self.video = video_renderer.Vid(path)
 
 
@@ -694,11 +745,16 @@ def check_valid_pos(string,object_type):
     available_position = ["right", "left", "down", "up", "center",None]
     if string not in available_position:
         available_position.pop() # Remove `None` for displaying Available positions
+
+        analyse.add_error("Wrong Argument in check_valid_pos")
+
         raise RuntimeError(f"`{object_type}` object got unknown positional argument. Please choose from {available_position}")
 
 class Text:
 
     def __init__(self,parent,text="Your Text Here",font=None,size=20,position="center",add_xy = (0,0),colour=(255, 255, 255)):
+
+        analyse.append_function("Text()")
 
         check_valid_pos(position,"Text")
         self.position = position.lower()
@@ -722,6 +778,7 @@ class Text:
 
     def edit(self,text=None,font=None,new_size=None,position=None,add_xy=None,colour=None):
 
+
         if text is not None:
             self.text = text
 
@@ -744,13 +801,18 @@ class Text:
             self.colour = colour
 
     def hide(self):
+        analyse.append_function("Text Hidden")
         self.visible = False
 
     def show(self):
+        analyse.append_function("text show()")
         self.visible = True
 
 class Documentation:
     def __init__(self):
+
+        analyse.append_function("Documentation()")
+
         self.GithubReadMeLink = "https://github.com/NamanChhabra21/splashscreen-engine/blob/main/README.md"
         self.gmail = "chhabranaman21@gmail.com"
         self.ytChannel = "www.youtube.com/@GenZCoderZShorts"
@@ -760,8 +822,11 @@ class Documentation:
         self.discussions = "https://github.com/NamanChhabra21/splashscreen-engine/discussions"
 
     def open(self):
+
+        analyse.append_function("open documentation()")
         os.startfile(self.GithubReadMeLink)
     def contact(self):
+        analyse.append_function("contact()")
         print(f"For Contact & Feedback :\n\
               Github : {self.GithubLink}\n\
               PyPI : {self.pypi}\n\
