@@ -307,8 +307,14 @@ class Screen:
                 self.screen.fill(self.bgColor)
 
                 # DRAW BACKGROUND IMAGE
+
                 if self.current_background:
-                    bg = pygame.transform.scale(self.current_background.original_image,(self.width,self.height))
+                    screen_width, screen_height = self.screen.get_size()
+
+                    bg = pygame.transform.scale(
+                        self.current_background.original_image,
+                        (screen_width, screen_height)
+                    )
                     self.screen.blit(bg,(0, 0))
                     draw_loading_bar(self.screen,self.current_background.ui_elements)
                     draw_text(self.screen,self.current_background.ui_elements)
@@ -588,7 +594,6 @@ class BackgroundVideo:
 
             self.play()
 
-
     def delete(self):
 
         analyse.append_function("delete()")
@@ -596,7 +601,11 @@ class BackgroundVideo:
         self.pause()
 
         self.video.reset_frames()
+
         self.frame = None
+
+        if self.parent.foreground_video is self:
+            self.parent.foreground_video = None
 
     def transparency(self, level=120):
 
