@@ -12,14 +12,16 @@ You can find these template codes here:
 <tr>
 <td align="center">
 
-### Template 1
+### Loading Please Wait
+Template 1
 <img src="https://raw.githubusercontent.com/NamanChhabra21/splashscreen-engine/main/Screenshots/Template0GIF.gif" width="350">
 
 </td>
 
 <td align="center">
 
-### Template 3
+### Loading Please Wait
+Template 3
 <img src="https://raw.githubusercontent.com/NamanChhabra21/splashscreen-engine/main/Screenshots/Template2GIF.gif" width="350">
 
 </td>
@@ -28,14 +30,16 @@ You can find these template codes here:
 <tr>
 <td align="center">
 
-### Template 2
+### Loading Please Wait
+Template 2
 <img src="https://raw.githubusercontent.com/NamanChhabra21/splashscreen-engine/main/Screenshots/Template1GIF.gif" width="350">
 
 </td>
 
 <td align="center">
 
-### Template 4
+### Loading Please Wait
+Template 4
 <img src="https://raw.githubusercontent.com/NamanChhabra21/splashscreen-engine/main/Screenshots/Template3GIF.gif" width="350">
 
 </td>
