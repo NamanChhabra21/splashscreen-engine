@@ -396,6 +396,9 @@ text.show()
 "down"
 ```
 
+
+
+
 #### Show and Hide text
 
 ```python
@@ -492,3 +495,7 @@ https://pypi.org/project/splashscreen-engine
 
 #### pygame, splash screen, loading screen, opencv, video rendering, python GUI, pygame framework, splashscreen, animated loader, desktop application, threaded rendering
 ---
+
+<p align="center">
+  <img src="https://github.com/NamanChhabra21/NamanChhabra21/blob/main/assets/quote-banner.svg" width="70%">
+</p>
